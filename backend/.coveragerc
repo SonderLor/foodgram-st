@@ -1,0 +1,12 @@
+[run]
+source = .
+omit =
+    */tests/*
+    */migrations/*
+    */management/*
+    */settings.py
+    */wsgi.py
+    */asgi.py
+    manage.py
+    */admin.py
+    */apps.py
