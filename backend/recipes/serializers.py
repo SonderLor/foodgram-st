@@ -91,7 +91,9 @@ class IngredientCreateSerializer(serializers.Serializer):
         try:
             Ingredient.objects.get(id=value)
         except Ingredient.DoesNotExist:
-            raise serializers.ValidationError("Ингредиент с указанным ID не найден")
+            raise serializers.ValidationError(
+                "Ингредиент с указанным ID не найден"
+            )
         return value
 
     def validate_amount(self, value):
@@ -163,7 +165,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def update(self, instance, validated_data):
-        ingredients = validated_data.pop('ingredients', None)
+        ingredients = validated_data.pop("ingredients", None)
         if ingredients is None:
             raise serializers.ValidationError("Нужен хотя бы один ингредиент")
 

@@ -1,6 +1,5 @@
 from django.db.models import Sum
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
@@ -100,7 +99,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         try:
-            cart_item = ShoppingCart.objects.get(user=request.user, recipe=recipe)
+            cart_item = ShoppingCart.objects.get(
+                user=request.user, recipe=recipe
+            )
             cart_item.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except ShoppingCart.DoesNotExist:

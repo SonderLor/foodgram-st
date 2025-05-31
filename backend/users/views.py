@@ -6,7 +6,6 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from api.pagination import CustomPagination
-from foodgram_backend.permissions import IsOwnerOrReadOnly
 
 from .models import Subscription
 from .serializers import (
@@ -102,7 +101,9 @@ class CustomUserViewSet(UserViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         try:
-            subscription = Subscription.objects.get(user=request.user, author=author)
+            subscription = Subscription.objects.get(
+                user=request.user, author=author
+            )
             subscription.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Subscription.DoesNotExist:
