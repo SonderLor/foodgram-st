@@ -4,8 +4,12 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from foodgram_backend.settings import MAX_INGREDIENT_NAME_LENGTH, MAX_MEASUREMENT_UNIT_NAME_LENGTH, \
-    MAX_RECIPE_NAME_LENGTH, MAX_SHORT_LINK_LENGTH
+from foodgram_backend.settings import (
+    MAX_INGREDIENT_NAME_LENGTH,
+    MAX_MEASUREMENT_UNIT_NAME_LENGTH,
+    MAX_RECIPE_NAME_LENGTH,
+    MAX_SHORT_LINK_LENGTH,
+)
 
 
 class Ingredient(models.Model):

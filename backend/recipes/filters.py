@@ -7,10 +7,10 @@ from .models import Recipe
 class IngredientFilter(SearchFilter):
     """Фильтр для поиска ингредиентов по названию."""
 
-    search_param = 'name'
+    search_param = "name"
 
     def get_search_fields(self, view, request):
-        return ['name']
+        return ["name"]
 
     def filter_queryset(self, request, queryset, view):
         name = request.query_params.get(self.search_param)
@@ -22,9 +22,11 @@ class IngredientFilter(SearchFilter):
 class RecipeFilter(filters.FilterSet):
     """Фильтр для рецептов."""
 
-    is_favorited = filters.BooleanFilter(method='filter_is_favorited')
-    is_in_shopping_cart = filters.BooleanFilter(method='filter_is_in_shopping_cart')
-    author = filters.NumberFilter(field_name='author__id')
+    is_favorited = filters.BooleanFilter(method="filter_is_favorited")
+    is_in_shopping_cart = filters.BooleanFilter(
+        method="filter_is_in_shopping_cart"
+    )
+    author = filters.NumberFilter(field_name="author__id")
 
     def filter_is_favorited(self, queryset, name, value):
         user = self.request.user
@@ -40,4 +42,4 @@ class RecipeFilter(filters.FilterSet):
 
     class Meta:
         model = Recipe
-        fields = ['author', 'is_favorited', 'is_in_shopping_cart']
+        fields = ["author", "is_favorited", "is_in_shopping_cart"]

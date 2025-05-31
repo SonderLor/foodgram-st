@@ -7,6 +7,7 @@ from recipes.models import Recipe
 
 User = get_user_model()
 
+
 class CustomUserCreateSerializer(UserCreateSerializer):
     """Сериализатор для создания пользователя."""
 
@@ -78,7 +79,9 @@ class UserWithRecipesSerializer(CustomUserSerializer):
                 limit = int(limit)
                 recipes = recipes[:limit]
             except ValueError:
-                raise serializers.ValidationError("Лимит рецептов должен быть целым числом.")
+                raise serializers.ValidationError(
+                    "Лимит рецептов должен быть целым числом."
+                )
         return RecipeMinifiedSerializer(recipes, many=True).data
 
 

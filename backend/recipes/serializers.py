@@ -88,7 +88,9 @@ class IngredientCreateSerializer(serializers.Serializer):
 
     def validate_amount(self, value):
         if value <= 0:
-            raise serializers.ValidationError("Количество ингредиента должно быть больше 0")
+            raise serializers.ValidationError(
+                "Количество ингредиента должно быть больше 0"
+            )
         return value
 
 
