@@ -45,12 +45,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return RecipeCreateUpdateSerializer
         return RecipeListSerializer
 
-    def perform_create(self, serializer):
-        serializer.save()
-
-    def perform_update(self, serializer):
-        serializer.save()
-
     @action(
         detail=True,
         methods=["get"],
@@ -81,11 +75,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        favorite = get_object_or_404(
-            Favorite, user=request.user, recipe=recipe
-        )
-        favorite.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        try:
+            favorite = Favorite.objects.get(user=request.user, recipe=recipe)
+            favorite.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Favorite.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
     @action(
         detail=True,
@@ -104,11 +99,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        cart_item = get_object_or_404(
-            ShoppingCart, user=request.user, recipe=recipe
-        )
-        cart_item.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        try:
+            cart_item = ShoppingCart.objects.get(user=request.user, recipe=recipe)
+            cart_item.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except ShoppingCart.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
     @action(
         detail=False,

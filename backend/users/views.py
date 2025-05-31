@@ -6,6 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from api.pagination import CustomPagination
+from foodgram_backend.permissions import IsOwnerOrReadOnly
 
 from .models import Subscription
 from .serializers import (
@@ -25,6 +26,7 @@ class CustomUserViewSet(UserViewSet):
     queryset = User.objects.all()
     serializer_class = CustomUserSerializer
     pagination_class = CustomPagination
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
     @action(
         detail=False,
@@ -99,8 +101,9 @@ class CustomUserViewSet(UserViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        subscription = get_object_or_404(
-            Subscription, user=request.user, author=author
-        )
-        subscription.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        try:
+            subscription = Subscription.objects.get(user=request.user, author=author)
+            subscription.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Subscription.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)

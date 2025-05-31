@@ -15,7 +15,7 @@ class IngredientFilter(SearchFilter):
     def filter_queryset(self, request, queryset, view):
         name = request.query_params.get(self.search_param)
         if name:
-            return queryset.filter(name__istartswith=name)
+            return queryset.filter(name__startswith=name)
         return queryset
 
 
