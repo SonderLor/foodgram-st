@@ -82,7 +82,8 @@ class IngredientCreateSerializer(serializers.Serializer):
     #   "text": "string",
     #   "cooking_time": 1
     # }
-    # ingredients содержат id ингредиента и amount, поэтому не выйдет доставать объект сразу
+    # ingredients содержат id ингредиента и amount,
+    # поэтому не выйдет доставать объект сразу
     id = serializers.IntegerField()
     amount = serializers.IntegerField(min_value=MIN_AMOUNT_OF_INGREDIENT)
 
