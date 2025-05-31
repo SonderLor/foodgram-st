@@ -2,11 +2,10 @@ from django.contrib.auth import get_user_model
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers
 
-from api.fields import Base64ImageField
+from foodgram_backend.fields import Base64ImageField
 from recipes.models import Recipe
 
 User = get_user_model()
-
 
 class CustomUserCreateSerializer(UserCreateSerializer):
     """Сериализатор для создания пользователя."""
@@ -62,7 +61,7 @@ class UserWithRecipesSerializer(CustomUserSerializer):
     """Сериализатор для пользователя с рецептами."""
 
     recipes = serializers.SerializerMethodField()
-    recipes_count = serializers.SerializerMethodField()
+    recipes_count = serializers.IntegerField(read_only=True)
 
     class Meta(CustomUserSerializer.Meta):
         fields = CustomUserSerializer.Meta.fields + (
@@ -75,13 +74,12 @@ class UserWithRecipesSerializer(CustomUserSerializer):
         limit = request.query_params.get("recipes_limit")
         recipes = obj.recipes.all()
         if limit:
-            recipes = recipes[: int(limit)]
-        return RecipeMinifiedSerializer(
-            recipes, many=True, read_only=True
-        ).data
-
-    def get_recipes_count(self, obj):
-        return obj.recipes.count()
+            try:
+                limit = int(limit)
+                recipes = recipes[:limit]
+            except ValueError:
+                raise serializers.ValidationError("Лимит рецептов должен быть целым числом.")
+        return RecipeMinifiedSerializer(recipes, many=True).data
 
 
 class SetAvatarSerializer(serializers.ModelSerializer):

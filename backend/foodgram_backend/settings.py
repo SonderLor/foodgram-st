@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_filters",
     "rest_framework",
     "rest_framework.authtoken",
     "djoser",
@@ -123,3 +124,16 @@ DJOSER = {
 }
 
 AUTH_USER_MODEL = "users.User"
+
+MAX_PAGINATION_SIZE = 100
+COMMON_PAGINATION_SIZE = 6
+
+MAX_EMAIL_LENGTH = 254
+MAX_FIRST_NAME_LENGTH = 150
+MAX_LAST_NAME_LENGTH = 150
+MAX_RECIPE_NAME_LENGTH = 256
+MAX_INGREDIENT_NAME_LENGTH = 128
+MAX_MEASUREMENT_UNIT_NAME_LENGTH = 64
+MAX_SHORT_LINK_LENGTH = 10
+
+MIN_AMOUNT_OF_INGREDIENT = 1

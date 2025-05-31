@@ -4,17 +4,20 @@ from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from foodgram_backend.settings import MAX_INGREDIENT_NAME_LENGTH, MAX_MEASUREMENT_UNIT_NAME_LENGTH, \
+    MAX_RECIPE_NAME_LENGTH, MAX_SHORT_LINK_LENGTH
+
 
 class Ingredient(models.Model):
     """Модель ингредиентов."""
 
     name = models.CharField(
         _("name"),
-        max_length=128,
+        max_length=MAX_INGREDIENT_NAME_LENGTH,
     )
     measurement_unit = models.CharField(
         _("measurement unit"),
-        max_length=64,
+        max_length=MAX_MEASUREMENT_UNIT_NAME_LENGTH,
     )
 
     class Meta:
@@ -24,6 +27,7 @@ class Ingredient(models.Model):
         indexes = [
             models.Index(fields=["name"]),
         ]
+        unique_together = (("name", "measurement_unit"),)
 
     def __str__(self):
         return f"{self.name}, {self.measurement_unit}"
@@ -40,7 +44,7 @@ class Recipe(models.Model):
     )
     name = models.CharField(
         _("name"),
-        max_length=256,
+        max_length=MAX_RECIPE_NAME_LENGTH,
     )
     image = models.ImageField(
         _("image"),
@@ -64,7 +68,7 @@ class Recipe(models.Model):
     )
     short_link = models.CharField(
         _("short link"),
-        max_length=10,
+        max_length=MAX_SHORT_LINK_LENGTH,
         unique=True,
         blank=True,
         null=True,

@@ -1,9 +1,9 @@
 from django.db import transaction
 from rest_framework import serializers
 
-from api.fields import Base64ImageField
+from foodgram_backend.fields import Base64ImageField
+from foodgram_backend.settings import MIN_AMOUNT_OF_INGREDIENT
 from users.serializers import CustomUserSerializer
-
 from .models import Ingredient, Recipe, RecipeIngredient
 
 
@@ -69,8 +69,27 @@ class RecipeListSerializer(serializers.ModelSerializer):
 class IngredientCreateSerializer(serializers.Serializer):
     """Сериализатор для добавления ингредиентов при создании рецепта."""
 
+    # В спецификации API следующее:
+    # {
+    #   "ingredients": [
+    #       {
+    #           "id": 1123,
+    #           "amount": 10
+    #       }
+    #   ],
+    #   "image": "base64",
+    #   "name": "string",
+    #   "text": "string",
+    #   "cooking_time": 1
+    # }
+    # ingredients содержат id ингредиента и amount, поэтому не выйдет доставать объект сразу
     id = serializers.IntegerField()
-    amount = serializers.IntegerField(min_value=1)
+    amount = serializers.IntegerField(min_value=MIN_AMOUNT_OF_INGREDIENT)
+
+    def validate_amount(self, value):
+        if value <= 0:
+            raise serializers.ValidationError("Количество ингредиента должно быть больше 0")
+        return value
 
 
 class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
@@ -102,18 +121,12 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
                 "Ингредиенты не должны повторяться"
             )
 
-        for item in value:
-            if item["amount"] <= 0:
-                raise serializers.ValidationError(
-                    "Количество ингредиента должно быть больше 0"
-                )
-
         return value
 
     def validate_cooking_time(self, value):
         if value <= 0:
             raise serializers.ValidationError(
-                "Время приготовления должно быть больше 0"
+                "Время приготовления должно быть реальным"
             )
         return value
 
@@ -140,11 +153,10 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def update(self, instance, validated_data):
-        ingredients = validated_data.pop("ingredients", None)
+        ingredients = validated_data.pop("ingredients")
 
-        if ingredients is not None:
-            instance.recipe_ingredients.all().delete()
-            self.create_ingredients(instance, ingredients)
+        instance.recipe_ingredients.all().delete()
+        self.create_ingredients(instance, ingredients)
 
         return super().update(instance, validated_data)
 
