@@ -2,9 +2,10 @@ import uuid
 
 from django.conf import settings
 from django.db import models
+from django.db.models import UniqueConstraint
 from django.utils.translation import gettext_lazy as _
 
-from foodgram_backend.settings import (
+from core.constants import (
     MAX_INGREDIENT_NAME_LENGTH,
     MAX_MEASUREMENT_UNIT_NAME_LENGTH,
     MAX_RECIPE_NAME_LENGTH,
@@ -23,6 +24,9 @@ class Ingredient(models.Model):
         _("measurement unit"),
         max_length=MAX_MEASUREMENT_UNIT_NAME_LENGTH,
     )
+    UniqueConstraint(
+        name="unique_ingredient", fields=["name", "measurement_unit"]
+    )
 
     class Meta:
         verbose_name = _("ingredient")
@@ -31,7 +35,6 @@ class Ingredient(models.Model):
         indexes = [
             models.Index(fields=["name"]),
         ]
-        unique_together = (("name", "measurement_unit"),)
 
     def __str__(self):
         return f"{self.name}, {self.measurement_unit}"

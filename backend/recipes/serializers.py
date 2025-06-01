@@ -1,8 +1,8 @@
 from django.db import transaction
 from rest_framework import serializers
 
-from foodgram_backend.fields import Base64ImageField
-from foodgram_backend.settings import MIN_AMOUNT_OF_INGREDIENT
+from core.fields import Base64ImageField
+from core.constants import MIN_AMOUNT_OF_INGREDIENT, MIN_COOKING_TIME
 from users.serializers import CustomUserSerializer
 from .models import Ingredient, Recipe, RecipeIngredient
 
@@ -69,39 +69,21 @@ class RecipeListSerializer(serializers.ModelSerializer):
 class IngredientCreateSerializer(serializers.Serializer):
     """Сериализатор для добавления ингредиентов при создании рецепта."""
 
-    # В спецификации API следующее:
-    # {
-    #   "ingredients": [
-    #       {
-    #           "id": 1123,
-    #           "amount": 10
-    #       }
-    #   ],
-    #   "image": "base64",
-    #   "name": "string",
-    #   "text": "string",
-    #   "cooking_time": 1
-    # }
-    # ingredients содержат id ингредиента и amount,
-    # поэтому не выйдет доставать объект сразу
-    id = serializers.IntegerField()
+    id = serializers.PrimaryKeyRelatedField(queryset=Ingredient.objects.all())
     amount = serializers.IntegerField(min_value=MIN_AMOUNT_OF_INGREDIENT)
 
-    def validate_id(self, value):
-        try:
-            Ingredient.objects.get(id=value)
-        except Ingredient.DoesNotExist:
+    def validate_amount(self, value):
+        if value < MIN_AMOUNT_OF_INGREDIENT:
             raise serializers.ValidationError(
-                "Ингредиент с указанным ID не найден"
+                "Количество ингредиента должно быть не меньше "
+                f"{MIN_AMOUNT_OF_INGREDIENT}"
             )
         return value
 
-    def validate_amount(self, value):
-        if value <= 0:
-            raise serializers.ValidationError(
-                "Количество ингредиента должно быть больше 0"
-            )
-        return value
+    def to_representation(self, instance):
+        if isinstance(instance, dict):
+            return {"id": instance["id"].id, "amount": instance["amount"]}
+        return {"id": instance.id, "amount": instance.amount}
 
 
 class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
@@ -127,7 +109,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         if not value:
             raise serializers.ValidationError("Нужен хотя бы один ингредиент")
 
-        ingredient_ids = [item["id"] for item in value]
+        ingredient_ids = [item["id"].id for item in value]
         if len(ingredient_ids) != len(set(ingredient_ids)):
             raise serializers.ValidationError(
                 "Ингредиенты не должны повторяться"
@@ -136,9 +118,9 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         return value
 
     def validate_cooking_time(self, value):
-        if value <= 0:
+        if value < MIN_COOKING_TIME:
             raise serializers.ValidationError(
-                "Время приготовления должно быть реальным"
+                f"Время приготовления должно быть не меньше {MIN_COOKING_TIME}"
             )
         return value
 
@@ -147,7 +129,7 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
             [
                 RecipeIngredient(
                     recipe=recipe,
-                    ingredient_id=ingredient["id"],
+                    ingredient_id=ingredient["id"].id,
                     amount=ingredient["amount"],
                 )
                 for ingredient in ingredients

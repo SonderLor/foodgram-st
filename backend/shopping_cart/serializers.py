@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
 from recipes.serializers import RecipeMinifiedSerializer
-
 from .models import ShoppingCart
 
 

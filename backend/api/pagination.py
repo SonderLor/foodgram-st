@@ -1,6 +1,6 @@
 from rest_framework.pagination import PageNumberPagination
 
-from foodgram_backend.settings import (
+from core.constants import (
     MAX_PAGINATION_SIZE,
     COMMON_PAGINATION_SIZE,
 )

@@ -6,7 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from api.pagination import CustomPagination
-from foodgram_backend.permissions import IsOwnerOrReadOnly
+from core.permissions import IsOwnerOrReadOnly
 from favorites.models import Favorite
 from favorites.serializers import FavoriteSerializer
 from shopping_cart.models import ShoppingCart

@@ -2,7 +2,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from foodgram_backend.settings import (
+from core.constants import (
     MAX_EMAIL_LENGTH,
     MAX_FIRST_NAME_LENGTH,
     MAX_LAST_NAME_LENGTH,
@@ -39,10 +39,6 @@ class User(AbstractUser):
         verbose_name = _("user")
         verbose_name_plural = _("users")
         ordering = ("username",)
-
-    @property
-    def recipes_count(self):
-        return self.recipes.count()
 
     def __str__(self):
         return self.username

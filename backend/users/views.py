@@ -6,7 +6,6 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from api.pagination import CustomPagination
-
 from .models import Subscription
 from .serializers import (
     CustomUserSerializer,

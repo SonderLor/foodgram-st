@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers
 
-from foodgram_backend.fields import Base64ImageField
+from core.fields import Base64ImageField
 from recipes.models import Recipe
 
 User = get_user_model()
@@ -83,6 +83,9 @@ class UserWithRecipesSerializer(CustomUserSerializer):
                     "Лимит рецептов должен быть целым числом."
                 )
         return RecipeMinifiedSerializer(recipes, many=True).data
+
+    def get_recipes_count(self, obj):
+        return obj.recipes.count()
 
 
 class SetAvatarSerializer(serializers.ModelSerializer):
