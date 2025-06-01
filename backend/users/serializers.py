@@ -62,7 +62,7 @@ class UserWithRecipesSerializer(CustomUserSerializer):
     """Сериализатор для пользователя с рецептами."""
 
     recipes = serializers.SerializerMethodField()
-    recipes_count = serializers.IntegerField(read_only=True)
+    recipes_count = serializers.SerializerMethodField()
 
     class Meta(CustomUserSerializer.Meta):
         fields = CustomUserSerializer.Meta.fields + (
