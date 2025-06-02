@@ -80,11 +80,6 @@ class IngredientCreateSerializer(serializers.Serializer):
             )
         return value
 
-    def to_representation(self, instance):
-        if isinstance(instance, dict):
-            return {"id": instance["id"].id, "amount": instance["amount"]}
-        return {"id": instance.id, "amount": instance.amount}
-
 
 class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
     """Сериализатор для создания и обновления рецепта."""
@@ -104,6 +99,13 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
             "text",
             "cooking_time",
         )
+
+    def validate(self, data):
+        if "ingredients" not in self.initial_data:
+            raise serializers.ValidationError(
+                {"ingredients": "Поле ингредиентов обязательно"}
+            )
+        return super().validate(data)
 
     def validate_ingredients(self, value):
         if not value:
@@ -148,8 +150,6 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
     @transaction.atomic
     def update(self, instance, validated_data):
         ingredients = validated_data.pop("ingredients", None)
-        if ingredients is None:
-            raise serializers.ValidationError("Нужен хотя бы один ингредиент")
 
         instance.recipe_ingredients.all().delete()
         self.create_ingredients(instance, ingredients)
@@ -160,14 +160,6 @@ class RecipeCreateUpdateSerializer(serializers.ModelSerializer):
         return RecipeListSerializer(
             instance, context={"request": self.context.get("request")}
         ).data
-
-
-class RecipeMinifiedSerializer(serializers.ModelSerializer):
-    """Сериализатор для краткого представления рецепта."""
-
-    class Meta:
-        model = Recipe
-        fields = ("id", "name", "image", "cooking_time")
 
 
 class RecipeGetShortLinkSerializer(serializers.ModelSerializer):

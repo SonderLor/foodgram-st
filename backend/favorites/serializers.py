@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from recipes.serializers import RecipeMinifiedSerializer
+from core.common_serializers import RecipeMinifiedSerializer
 from .models import Favorite
 
 

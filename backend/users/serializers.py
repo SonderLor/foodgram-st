@@ -3,7 +3,7 @@ from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers
 
 from core.fields import Base64ImageField
-from recipes.models import Recipe
+from core.common_serializers import RecipeMinifiedSerializer
 
 User = get_user_model()
 
@@ -47,15 +47,6 @@ class CustomUserSerializer(UserSerializer):
         if user.is_anonymous or user == obj:
             return False
         return user.follower.filter(author=obj).exists()
-
-
-class RecipeMinifiedSerializer(serializers.ModelSerializer):
-    """Сериализатор для краткого представления рецепта."""
-
-    class Meta:
-        model = Recipe
-        fields = ("id", "name", "image", "cooking_time")
-        read_only_fields = ("id", "name", "image", "cooking_time")
 
 
 class UserWithRecipesSerializer(CustomUserSerializer):

@@ -24,9 +24,6 @@ class Ingredient(models.Model):
         _("measurement unit"),
         max_length=MAX_MEASUREMENT_UNIT_NAME_LENGTH,
     )
-    UniqueConstraint(
-        name="unique_ingredient", fields=["name", "measurement_unit"]
-    )
 
     class Meta:
         verbose_name = _("ingredient")
@@ -35,6 +32,9 @@ class Ingredient(models.Model):
         indexes = [
             models.Index(fields=["name"]),
         ]
+        UniqueConstraint(
+            name="unique_ingredient", fields=["name", "measurement_unit"]
+        )
 
     def __str__(self):
         return f"{self.name}, {self.measurement_unit}"
